@@ -1469,7 +1469,7 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            response = self._stub.StartWorkflowBeta1(req)
+            response = await self._stub.StartWorkflowBeta1(req)
             return StartWorkflowResponse(instance_id=response.instance_id)
         except grpc.aio.AioRpcError as err:
             raise DaprInternalError(err.details())
@@ -1500,7 +1500,7 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            resp = self._stub.GetWorkflowBeta1(req)
+            resp = await self._stub.GetWorkflowBeta1(req)
             # not found workflows return no error, but empty status
             if resp.runtime_status == '':
                 raise DaprInternalError('no such instance exists')
@@ -1545,8 +1545,9 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            _, call = self._stub.TerminateWorkflowBeta1.with_call(req)
-            return DaprResponse(headers=call.initial_metadata())
+            call = self._stub.TerminateWorkflowBeta1(req)
+            await call
+            return DaprResponse(headers=await call.initial_metadata())
         except grpc.aio.AioRpcError as err:
             raise DaprInternalError(err.details())
 
@@ -1608,7 +1609,7 @@ class DaprGrpcClientAsync:
             else:
                 encoded_data = bytes([])
         # Actual workflow raise event invocation
-        req = api_v1.raise_workflow_event(
+        req = api_v1.RaiseEventWorkflowRequest(
             instance_id=instance_id,
             workflow_component=workflow_component,
             event_name=event_name,
@@ -1616,8 +1617,9 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            _, call = self._stub.RaiseEventWorkflowBeta1.with_call(req)
-            return DaprResponse(headers=call.initial_metadata())
+            call = self._stub.RaiseEventWorkflowBeta1(req)
+            await call
+            return DaprResponse(headers=await call.initial_metadata())
         except grpc.aio.AioRpcError as err:
             raise DaprInternalError(err.details())
 
@@ -1648,9 +1650,10 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            _, call = self._stub.PauseWorkflowBeta1.with_call(req)
+            call = self._stub.PauseWorkflowBeta1(req)
+            await call
 
-            return DaprResponse(headers=call.initial_metadata())
+            return DaprResponse(headers=await call.initial_metadata())
         except grpc.aio.AioRpcError as err:
             raise DaprInternalError(err.details())
 
@@ -1680,9 +1683,10 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            _, call = self._stub.ResumeWorkflowBeta1.with_call(req)
+            call = self._stub.ResumeWorkflowBeta1(req)
+            await call
 
-            return DaprResponse(headers=call.initial_metadata())
+            return DaprResponse(headers=await call.initial_metadata())
         except grpc.aio.AioRpcError as err:
             raise DaprInternalError(err.details())
 
@@ -1712,9 +1716,10 @@ class DaprGrpcClientAsync:
         )
 
         try:
-            _, call = self._stub.PurgeWorkflowBeta1.with_call(req)
+            call = self._stub.PurgeWorkflowBeta1(req)
+            await call
 
-            return DaprResponse(headers=call.initial_metadata())
+            return DaprResponse(headers=await call.initial_metadata())
 
         except grpc.aio.AioRpcError as err:
             raise DaprInternalError(err.details())

@@ -56,14 +56,16 @@ def unpack(data: GrpcAny, message: GrpcMessage) -> None:
     data.Unpack(message)
 
 
-def to_bytes(data: Union[str, bytes]) -> bytes:
+def to_bytes(data: Union[str, bytes, None]) -> bytes:
     """Convert str data to bytes."""
-    if isinstance(data, bytes):
+    if data is None:
+        return b''
+    elif isinstance(data, bytes):
         return data
     elif isinstance(data, str):
         return data.encode('utf-8')
     else:
-        raise f'invalid data type {type(data)}'
+        raise ValueError(f'invalid data type {type(data)}')
 
 
 def to_str(data: Union[str, bytes]) -> str:
@@ -73,7 +75,7 @@ def to_str(data: Union[str, bytes]) -> str:
     elif isinstance(data, bytes):
         return data.decode('utf-8')
     else:
-        raise f'invalid data type {type(data)}'
+        raise ValueError(f'invalid data type {type(data)}')
 
 
 # Data validation helpers
